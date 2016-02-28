@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 /**
  * Represents a road that is linked to two settlements: source and destination.
- * @author Chris Loftus
- * @version 1.0 (20th February 2016)
+ * @author Chris Loftus, Josh Smith
+ * @version 1.1 (28th February 2016)
  */
 public class Settlement {
 	private String name;
@@ -24,8 +24,16 @@ public class Settlement {
 		kind = k;
 	}
 	
+	public Settlement(String nm, int pop, SettlementType k) {
+		this();
+		name = nm;
+		kind = k;
+		population  = pop;
+	}
+
 	public Settlement() {
 		// INSERT CODE HERE
+		roads = new ArrayList<>();
 	}
 
 	/**
@@ -76,6 +84,7 @@ public class Settlement {
 	 */
 	public void add(Road road) throws IllegalArgumentException {
 		// ADD CODE HERE
+		roads.add(road);
 	}
 	
 	/**
