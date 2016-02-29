@@ -1,13 +1,15 @@
 
 
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
+
 import java.io.IOException;
 import java.util.Scanner;
 
 /**
  * Main class to test the Road and Settlement classes
  *
- * @author Chris Loftus, Josh Smith (add your name and change version number/date)
- * @version 1.2 (28th February 2016)
+ * @author Chris Loftus, Josh Smith 
+ * @version 1.3 (29th February 2016)
  */
 public class Application {
 
@@ -38,13 +40,13 @@ public class Application {
                 case '5':
                     break;
                 case '6':
+                    save();
                     break;
                 case '7':
-                    break;
-                case 'Q':
+                    load();
                     break;
             }
-        } while (input != 'Q');
+        } while (input != 'q' || input != 'Q');
 
     }
 
@@ -71,12 +73,23 @@ public class Application {
     }
 
 
-    private void save() throws IOException {
-        map.save();
+    private void save(){
+        try {
+            map.save();
+            System.out.println("Save Complete!");
+        } catch (IOException IO) {
+            System.out.println("IO Exception, File probably not found.");
+        }
     }
 
-    private void load() throws IOException {
-        map.load();
+    private void load() {
+        try {
+            map.load();
+            System.out.println("Load Complete!");
+        } catch (IOException IO) {
+            System.out.println("IO Exception, File probably not found.");
+        }
+
     }
 
     private void printMenu() {
@@ -118,6 +131,10 @@ public class Application {
         nm = scan.nextLine();
         System.out.print("Population: ");
         pop = scan.nextInt();
+
+        // THIS IS NECESSARY, scan.nextInt() DOESNT READ THE \n
+        scan.nextLine(); // DONT TOUCH
+        // DONT TOUCH
 
         boolean valid;
         do {
