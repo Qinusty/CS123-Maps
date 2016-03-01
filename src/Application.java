@@ -38,11 +38,13 @@ public class Application {
                     map.removeSettlement(scan.nextLine());
                     break;
                 case '3':
-                    map.addRoad(askRoad());
+                    map.addRoad(askForRoad());
                     break;
                 case '4':
+
                     break;
                 case '5':
+                    map.display();
                     break;
                 case '6':
                     save();
@@ -87,7 +89,7 @@ public class Application {
      *
      * @return A Road object instantiated with the variables received when querying the user.
      */
-    private Road askRoad() {
+    private Road askForRoad() {
         String name;
         Classification classification;
         double dist;
