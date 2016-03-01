@@ -1,12 +1,9 @@
-import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 
 /**
  * Represents a road that is linked to two settlements: source and destination.
  * @author Chris Loftus, Josh Smith
- * @version 1.1 (28th February 2016)
+ * @version 1.2 (1st March 2016)
  */
 public class Settlement {
 	private String name;
@@ -34,6 +31,7 @@ public class Settlement {
 	public Settlement() {
 		// INSERT CODE HERE
 		roads = new ArrayList<>();
+
 	}
 
 	/**
@@ -97,7 +95,12 @@ public class Settlement {
 	public ArrayList<Road> findRoads(String name){
 		ArrayList<Road> roadsFound = new ArrayList<>();
 		
-		// INSERT CODE HERE
+		for (Road r : roads) {
+			if (r.getName() == name) {
+				roadsFound.add(r);
+			}
+		}
+
 		return roadsFound;
 	}
 	
@@ -107,9 +110,9 @@ public class Settlement {
 	 * of each road 
 	 */
 	public void deleteRoads() {
-		// We have to find the settlements at the other end of the
-	    // road and detach the road from that end too 
-		// INSERT CODE HERE (SEE delete BELOW)
+		for (int i = roads.size() - 1; i > 0; i--) {
+			this.delete(roads.get(i));
+		}
 		
 		// I'll give you this line!
 		roads.clear();
@@ -124,7 +127,20 @@ public class Settlement {
 	 * to this settlement
 	 */
 	public void delete(Road road) throws IllegalArgumentException{
-		// INSERT CODE HERE
+		for (Road r : roads) {
+			if (r.equals(road)) {
+				// remove first to prevent infinite recursive loops.
+				roads.remove(r);
+				// Delete the road from the other settlement.
+				if (this.equals(road.getSourceSettlement())) {
+					road.getDestinationSettlement().delete(road);
+				} else {
+					road.getSourceSettlement().delete(road);
+				}
+				// Stop looping through
+				break;
+			}
+		}
 	}
 	/**
 	 * Returns a list of all the roads connected to this settlement
@@ -136,10 +152,7 @@ public class Settlement {
 		// that we don't break encapsulation and data hiding.
 		// If I returned roads, then the calling code could change
 		// change it directly which would be dangerous
-		ArrayList<Road> result = new ArrayList<>();
-		for(Road rd: roads){
-			result.add(rd);
-		}
+		ArrayList<Road> result = new ArrayList<>(roads);
 		return result;
 	}
 

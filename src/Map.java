@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 /**
  * @author Chris Loftus, Josh Smith
- * @version 1.2 (29th February 2016)
+ * @version 1.3 (1st March 2016)
  */
 
 public class Map {
@@ -41,6 +41,23 @@ public class Map {
     public void addSettlement(Settlement newSettlement) throws IllegalArgumentException {
         // STEP 5: INSERT CODE HERE
         settlements.add(newSettlement);
+    }
+
+    /**
+     * Removes the first settlement with an identical name in the list of settlements.
+     * @param name The name of the settlement to remove.
+     */
+    public void removeSettlement(String name) {
+        for (Settlement s : settlements) {
+            if (s.getName().equals(name)) {
+                roads.removeAll(s.getAllRoads());
+                s.deleteRoads();
+                settlements.remove(s);
+                // Stop looping
+                break;
+            }
+        }
+        System.out.println("Settlement not found!");
     }
 
 

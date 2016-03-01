@@ -5,7 +5,7 @@ import java.util.Scanner;
  * Main class to test the Road and Settlement classes
  *
  * @author Chris Loftus, Josh Smith
- * @version 1.3 (29th February 2016)
+ * @version 1.4 (1st March 2016)
  */
 public class Application {
 
@@ -34,6 +34,8 @@ public class Application {
                     map.addSettlement(askForSettlement());
                     break;
                 case '2':
+                    System.out.print("Settlement to remove: ");
+                    map.removeSettlement(scan.nextLine());
                     break;
                 case '3':
                     break;
@@ -48,7 +50,7 @@ public class Application {
                     load();
                     break;
             }
-        } while (input != 'q' || input != 'Q');
+        } while (input != 'q' && input != 'Q');
 
     }
 
@@ -172,6 +174,8 @@ public class Application {
         } while (!valid);
         return new Settlement(nm, pop, type);
     }
+
+    /* -------------------_Static Stuff_----------------------------- */
 
     public static void main(String args[]) throws IOException{
         Application app = new Application();
