@@ -60,6 +60,14 @@ public class Map {
         System.out.println("Settlement not found!");
     }
 
+    /**
+     * Adds a road to the list of roads.
+     * @param road The road to add.
+     */
+    public void addRoad(Road road) {
+        roads.add(road);
+    }
+
 
     // STEPS 7-10: INSERT METHODS HERE, i.e. those similar to addSettlement and required
     // by the Application class

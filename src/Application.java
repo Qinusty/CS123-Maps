@@ -13,7 +13,7 @@ public class Application {
     private Map map;
 
     /**
-     *  Default constructor which instantiates the scanner and Map.
+     * Default constructor which instantiates the scanner and Map.
      */
     public Application() {
         scan = new Scanner(System.in);
@@ -38,6 +38,7 @@ public class Application {
                     map.removeSettlement(scan.nextLine());
                     break;
                 case '3':
+                    map.addRoad(askRoad());
                     break;
                 case '4':
                     break;
@@ -58,6 +59,7 @@ public class Application {
 
     /**
      * Queries the user for a road classification.
+     *
      * @return Returns a road classification.
      */
     private Classification askForRoadClassifier() {
@@ -81,9 +83,36 @@ public class Application {
     }
 
     /**
+     * Queries the user for details to create a road.
+     *
+     * @return A Road object instantiated with the variables received when querying the user.
+     */
+    private Road askRoad() {
+        String name;
+        Classification classification;
+        double dist;
+        String source, dest;
+        System.out.print("Enter road name: ");
+        name = scan.nextLine();
+        classification = askForRoadClassifier();
+
+        // VALIDATE map.getSettlement()
+        System.out.print("Enter source settlement: ");
+        source = scan.nextLine();
+        System.out.print("Enter destination settlement: ");
+        dest = scan.nextLine();
+
+        System.out.print("Distance (Miles) : ");
+        dist = scan.nextDouble();
+        scan.nextLine();
+
+        return new Road(name, classification, map.getSettlement(source), map.getSettlement(dest), dist);
+    }
+
+    /**
      * Saves the map state to two files, roads.txt and settlements.txt.
      */
-    private void save(){
+    private void save() {
         try {
             map.save();
             System.out.println("Save Complete!");
@@ -177,7 +206,7 @@ public class Application {
 
     /* -------------------_Static Stuff_----------------------------- */
 
-    public static void main(String args[]) throws IOException{
+    public static void main(String args[]) throws IOException {
         Application app = new Application();
         app.load();
         app.runMenu();
