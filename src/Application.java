@@ -1,14 +1,10 @@
-
-
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
-
 import java.io.IOException;
 import java.util.Scanner;
 
 /**
  * Main class to test the Road and Settlement classes
  *
- * @author Chris Loftus, Josh Smith 
+ * @author Chris Loftus, Josh Smith
  * @version 1.3 (29th February 2016)
  */
 public class Application {
@@ -16,11 +12,17 @@ public class Application {
     private Scanner scan;
     private Map map;
 
+    /**
+     *  Default constructor which instantiates the scanner and Map.
+     */
     public Application() {
         scan = new Scanner(System.in);
         map = new Map();
     }
 
+    /**
+     * Runs the menu, this function loops until the user inputs Q into the menu options.
+     */
     private void runMenu() {
         // STEP 1: ADD MENU CODE HERE
         char input;
@@ -52,6 +54,10 @@ public class Application {
 
     // STEP 1: ADD PRIVATE UTILITY MENTHODS HERE. askForRoadClassifier, save and load provided
 
+    /**
+     * Queries the user for a road classification.
+     * @return Returns a road classification.
+     */
     private Classification askForRoadClassifier() {
         Classification result = null;
         boolean valid;
@@ -72,7 +78,9 @@ public class Application {
         return result;
     }
 
-
+    /**
+     * Saves the map state to two files, roads.txt and settlements.txt.
+     */
     private void save(){
         try {
             map.save();
@@ -82,6 +90,9 @@ public class Application {
         }
     }
 
+    /**
+     * Loads the map state from roads.txt and settlements.txt.
+     */
     private void load() {
         try {
             map.load();
@@ -92,6 +103,9 @@ public class Application {
 
     }
 
+    /**
+     * Prints the multiline menu to screen.
+     */
     private void printMenu() {
         // STEP 1: ADD CODE HERE
         System.out.println("--* Menu *--");
