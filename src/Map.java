@@ -103,9 +103,9 @@ public class Map {
      */
     public Road findRoad(String name, String source, String dest) {
         for (Road r : roads) {
-            if (r.getName() == name) {
-                if (r.getSourceSettlement().getName() == source &&
-                        r.getDestinationSettlement().getName() == dest) {
+            if (r.getName().equals(name)) {
+                if (r.getSourceSettlement().getName().equals(source) &&
+                        r.getDestinationSettlement().getName().equals(dest)) {
                     return r;
                 }
             }
