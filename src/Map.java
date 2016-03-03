@@ -114,6 +114,18 @@ public class Map {
     }
 
     /**
+     * Finds the fastest route between two settlements and returns the route as a list of roads in order A -> B.
+     * @param A The starting settlement.
+     * @param B The destination settlement.
+     * @return Returns a list of roads which make up the route found between A and B. If null, no route found.
+     */
+    public ArrayList<Road> findRoute(Settlement A, Settlement B) {
+        ArrayList<Road> ret = new ArrayList<>();
+        // Find fastest route
+        return ret;
+    }
+
+    /**
      * Loads the map based on a file format defined by the example provided.
      *
      * @throws IOException Throws IO exception if either file is not found.
@@ -235,5 +247,7 @@ public class Map {
         }
         return result;
     }
+
+
 
 }
