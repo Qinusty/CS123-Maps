@@ -30,26 +30,31 @@ public class Application {
             printMenu();
             input = askChar("Enter Choice");
             switch (input) {
-                case '1':
+                case '1': // Add Settlement
                     map.addSettlement(askForSettlement());
                     break;
-                case '2':
+                case '2': // Remove Settlement
                     System.out.print("Settlement to remove: ");
                     map.removeSettlement(scan.nextLine());
                     break;
-                case '3':
+                case '3': // Add Road
                     map.addRoad(askForRoad());
                     break;
-                case '4':
-
+                case '4': // Remove Road
+                    Road removalRoad = askForRoadToRemove();
+                    if (removalRoad == null) {
+                        System.out.println("ERROR: Road not found.");
+                    }else {
+                        map.removeRoad(removalRoad);
+                    }
                     break;
-                case '5':
+                case '5': // Display Map
                     map.display();
                     break;
-                case '6':
+                case '6': // Save Map to file
                     save();
                     break;
-                case '7':
+                case '7': // Load Map from file
                     load();
                     break;
             }
@@ -109,6 +114,19 @@ public class Application {
         scan.nextLine();
 
         return new Road(name, classification, map.getSettlement(source), map.getSettlement(dest), dist);
+    }
+
+    private Road askForRoadToRemove() {
+        String nm, source, dest;
+
+        System.out.print("Name: ");
+        nm = scan.nextLine();
+        System.out.print("Source Settlement: ");
+        source = scan.nextLine();
+        System.out.print("Destination Settlement: ");
+        dest = scan.nextLine();
+
+        return map.findRoad(nm, source, dest);
     }
 
     /**

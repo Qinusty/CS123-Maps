@@ -132,11 +132,8 @@ public class Settlement {
 				// remove first to prevent infinite recursive loops.
 				roads.remove(r);
 				// Delete the road from the other settlement.
-				if (this.equals(road.getSourceSettlement())) {
-					road.getDestinationSettlement().delete(road);
-				} else {
-					road.getSourceSettlement().delete(road);
-				}
+				r.getAlternateSettlement(this).delete(r);
+
 				// Stop looping through
 				break;
 			}
@@ -180,8 +177,20 @@ public class Settlement {
 	 */
 	public String toString() {
 		String result = "";
-		// INSERT CODE HERE. 
+		result += "Settlement Name = " + this.getName() + "\n" +
+				"Population = " + this.getPopulation() + "\n" +
+				"Kind = " + this.getKind().toString() + "\n" +
+				"Roads = \n";
+		for (Road r : this.getAllRoads()) {
+			result += indent(1) + r.getName() + " connected to " + r.getAlternateSettlement(this).getName() + "\n";
+		}
 		return result;
 	}
-	
+	private String indent(int level) {
+		String ret = "";
+		for (int i = 0; i < level; i++) {
+			ret += "  ";
+		}
+		return ret;
+	}
 }

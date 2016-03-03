@@ -40,7 +40,11 @@ public class Map {
      */
     public void addSettlement(Settlement newSettlement) throws IllegalArgumentException {
         // STEP 5: INSERT CODE HERE
-        settlements.add(newSettlement);
+        if (getSettlement(newSettlement.getName()) != null) {
+            System.out.println("ERROR: Settlement already exists on map.");
+        } else {
+            settlements.add(newSettlement);
+        }
     }
 
     /**
@@ -61,16 +65,53 @@ public class Map {
     }
 
     /**
-     * Adds a road to the list of roads.
+     * Adds a road to the list of roads. Checks to make sure that an identical road does not exist and also
+     * that there isn't an identical route on the map.
      * @param road The road to add.
      */
     public void addRoad(Road road) {
-        roads.add(road);
+        if (roads.contains(road)) {
+            System.out.println("ERROR: Road already exists on map.");
+        }else {
+            boolean noOtherConnectingRoads = true;
+            for (Road r : road.getSourceSettlement().getAllRoads()) {
+                // IF theres another road with the same source and destination.
+                if (r.getAlternateSettlement(road.getSourceSettlement()) == road.getDestinationSettlement()) {
+                    noOtherConnectingRoads = false;
+                    System.out.println("ERROR: Another road exists with the same source and destination settlements.");
+                    break;
+
+                }
+            }
+            if (noOtherConnectingRoads) {
+                roads.add(road);
+            }
+        }
     }
 
+    public void removeRoad(Road r) {
+        r.getSourceSettlement().delete(r);
+        roads.remove(r);
+    }
 
-    // STEPS 7-10: INSERT METHODS HERE, i.e. those similar to addSettlement and required
-    // by the Application class
+    /**
+     * Finds a road with details matching those provided and returns it.
+     * @param name The name of the road to be found.
+     * @param source The name of the source destination of the road to be found.
+     * @param dest The name of the destination destination of the road to be found.
+     * @return Returns a Road with identical values as those passed. or null if one is not found.
+     */
+    public Road findRoad(String name, String source, String dest) {
+        for (Road r : roads) {
+            if (r.getName() == name) {
+                if (r.getSourceSettlement().getName() == source &&
+                        r.getDestinationSettlement().getName() == dest) {
+                    return r;
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * Loads the map based on a file format defined by the example provided.
@@ -144,7 +185,6 @@ public class Map {
         }
         return null;
     }
-
     /**
      * Saves the map data to settlements.txt and roads.txt.
      * @throws IOException Can throw IO exception.
@@ -179,10 +219,21 @@ public class Map {
 
 
     }
-
     public String toString() {
         String result = "";
-        // INSERT CODE HERE
+        result += "Map Settlements: \n";
+        for (Settlement s : settlements) {
+            result += s.toString();
+        }
+        result += "\nMap Roads: \n";
+        for (Road r : roads) {
+            result += "Road Name=" + r.getName() +
+                    ", Classification=" + r.getClassification().toString() +
+                    ", length=" + r.getLength() +
+                    ", Source Settlement=" + r.getSourceSettlement().getName() +
+                    ", Destination Settlement=" + r.getDestinationSettlement().getName() + "\n";
+        }
         return result;
     }
+
 }

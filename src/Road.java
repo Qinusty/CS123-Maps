@@ -84,6 +84,28 @@ public class Road {
 		return destinationSettlement;
 	}
 
+	/**
+	 * Provided a settlement, return the other settlement connected to the road.
+	 * If the passed settlement isn't connected to the road, return null.
+	 * @param s The Settlement to cross check.
+	 * @return The other settlement connected to the road.
+     */
+	public Settlement getAlternateSettlement(Settlement s) {
+		boolean source = sourceSettlement.equals(s);
+		boolean dest = destinationSettlement.equals(s);
+
+		if (!(source || dest)) {
+			return null;
+		}
+		if (source) {
+			return destinationSettlement;
+		}
+		else if (dest) {
+			return sourceSettlement;
+		}
+		else return null;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -119,7 +141,11 @@ public class Road {
 	 */
 	public String toString() {
 		String result = "";
-		// INSERT CODE HERE
+		result += "Road Name=" + this.getName() +
+				", Classification=" + this.getClassification().toString() +
+				", length=" + this.getLength() +
+				", Source Settlement=" + this.getSourceSettlement().getName() +
+				", Destination Settlement=" + this.getDestinationSettlement().getName() + "\n";
 		return result;
 	}
 }
