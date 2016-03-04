@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * @author Chris Loftus, Josh Smith
@@ -75,8 +76,8 @@ public class Map {
         }else {
             boolean noOtherConnectingRoads = true;
             for (Road r : road.getSourceSettlement().getAllRoads()) {
-                // IF theres another road with the same source and destination.
-                if (r.getAlternateSettlement(road.getSourceSettlement()) == road.getDestinationSettlement()) {
+                // IF there's another road with the same source and destination.
+                if (r.getAlternateSettlement(road.getSourceSettlement()).equals(road.getDestinationSettlement())) {
                     noOtherConnectingRoads = false;
                     System.out.println("ERROR: Another road exists with the same source and destination settlements.");
                     break;
@@ -120,9 +121,24 @@ public class Map {
      * @return Returns a list of roads which make up the route found between A and B. If null, no route found.
      */
     public ArrayList<Road> findRoute(Settlement A, Settlement B) {
-        ArrayList<Road> ret = new ArrayList<>();
-        // Find fastest route
-        return ret;
+        Dijkstras d = new Dijkstras(this, A);
+        return d.shortestRoute(B);
+    }
+
+    /**
+     *
+     * @return Returns all settlements.
+     */
+    public ArrayList<Settlement> getSettlements() {
+        return settlements;
+    }
+
+    /**
+     *
+     * @return Returns all roads.
+     */
+    public ArrayList<Road> getRoads() {
+        return roads;
     }
 
     /**
@@ -197,6 +213,7 @@ public class Map {
         }
         return null;
     }
+
     /**
      * Saves the map data to settlements.txt and roads.txt.
      * @throws IOException Can throw IO exception.
@@ -228,9 +245,8 @@ public class Map {
                     r.getDestinationSettlement().getName());
         }
         outfile.close();
-
-
     }
+
     public String toString() {
         String result = "";
         result += "Map Settlements: \n";

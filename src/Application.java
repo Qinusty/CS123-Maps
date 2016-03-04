@@ -1,4 +1,7 @@
+import sun.rmi.transport.DGCImpl_Skel;
+
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -51,10 +54,16 @@ public class Application {
                 case '5': // Display Map
                     map.display();
                     break;
-                case '6': // Save Map to file
+                case '6':
+                    // shortest route query
+                    // The best test for this is currently Aberystwyth to Borth due to
+                    // the
+                    queryForRoute();
+                    break;
+                case '7': // Save Map to file
                     save();
                     break;
-                case '7': // Load Map from file
+                case '8': // Load Map from file
                     load();
                     break;
             }
@@ -87,6 +96,53 @@ public class Application {
             }
         } while (!valid);
         return result;
+    }
+
+    private void queryForRoute() {
+        System.out.println("Please enter the information required to find your route.");
+        Settlement source = null;
+        Settlement dest = null;
+        boolean valid = false;
+        while (!valid) {
+            System.out.print("Source: ");
+            source = map.getSettlement(scan.nextLine());
+            if (source.equals(null)) {
+                System.out.println("ERORR: Settlement not found, try again!");
+            }else {
+                valid = true;
+            }
+        }
+        // Reset validity.
+        valid = false;
+        while (!valid) {
+            System.out.print("Destination: ");
+            dest = map.getSettlement(scan.nextLine());
+            if (dest.equals(null)) {
+                System.out.println("ERORR: Settlement not found, try again!");
+            } else {
+                valid = true;
+            }
+        }
+        // Gets map to find the shortest route and prints it to the user.
+        printRoute(map.findRoute(source,dest), source);
+    }
+
+    /**
+     * Prints the route in a user friendly manner.
+     * @param route The route which has been pre-calculated.
+     * @param source The source destination.
+     */
+    private void printRoute(ArrayList<Road> route, Settlement source) {
+        Settlement next;
+        Settlement current = source;
+        System.out.println("Starting at " + source.getName());
+        for (Road r : route) {
+            next = r.getAlternateSettlement(current);
+            System.out.println("Take the " + r.getName() + " for " + r.getLength() + " miles until you reach " +
+                                next.getName());
+            current = next;
+
+        }
     }
 
     /**
@@ -165,8 +221,9 @@ public class Application {
                 " 3) Create Road\n" +
                 " 4) Delete Road\n" +
                 " 5) Display Map\n" +
-                " 6) Save Map\n" +
-                " 7) Load Map\n" +
+                " 6) Get shortest route\n" +
+                " 7) Save Map\n" +
+                " 8) Load Map\n" +
                 " Q) Quit"
         );
     }

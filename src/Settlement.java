@@ -103,6 +103,21 @@ public class Settlement {
 
 		return roadsFound;
 	}
+
+	/**
+	 * Finds a road which leads from this Settlement directly to a destination settlement.
+	 * @param dest The destination settlement.
+	 * @return A road which connects this settlement to the destination settlement.
+     */
+	public Road getRoadTo(Settlement dest) {
+		for (Road r : roads) {
+			if (r.getAlternateSettlement(this).equals(dest)) {
+				return r;
+			}
+		}
+		// if nothing found
+		return null;
+	}
 	
 	/**
 	 * Deletes all the roads attached to this settlement. It will
@@ -168,6 +183,11 @@ public class Settlement {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
 	}
 
 	/**
