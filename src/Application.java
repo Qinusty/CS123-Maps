@@ -1,5 +1,3 @@
-import sun.rmi.transport.DGCImpl_Skel;
-
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -9,7 +7,7 @@ import java.util.Scanner;
  * Main class to test the Road and Settlement classes
  *
  * @author Chris Loftus, Josh Smith
- * @version 1.4 (1st March 2016)
+ * @version 2.0 (4th March 2016)
  */
 public class Application {
 
@@ -28,7 +26,6 @@ public class Application {
      * Runs the menu, this function loops until the user inputs Q into the menu options.
      */
     private void runMenu() {
-        // STEP 1: ADD MENU CODE HERE
         char input;
         do {
             printMenu();
@@ -48,7 +45,7 @@ public class Application {
                     Road removalRoad = askForRoadToRemove();
                     if (removalRoad == null) {
                         System.out.println("ERROR: Road not found.");
-                    }else {
+                    } else {
                         map.removeRoad(removalRoad);
                     }
                     break;
@@ -97,6 +94,36 @@ public class Application {
         return result;
     }
 
+    /**
+     * Queries the user for a settlement type.
+     *
+     * @return Returns a settlement type.
+     */
+    private SettlementType askForSettlementType() {
+        SettlementType type = null;
+        boolean valid;
+        do {
+            valid = false;
+            System.out.print("Type: ");
+            String choice = scan.nextLine().toUpperCase();
+            try {
+                type = SettlementType.valueOf(choice);
+                valid = true;
+            } catch (IllegalArgumentException iae) {
+                System.out.print(choice + " is not a valid choice. Try again. (");
+                for (int i = 0; i < SettlementType.values().length; i++) {
+                    System.out.print(SettlementType.values()[i]);
+
+                    if (i < SettlementType.values().length - 1) { // if not the last element in the array.
+                        System.out.print(", "); // add a seperator.
+                    }
+                }
+                System.out.println(")");
+            }
+        } while (!valid);
+        return type;
+    }
+
     private void queryForRoute() {
         System.out.println("Please enter the information required to find your route.");
         Settlement source = null;
@@ -107,7 +134,7 @@ public class Application {
             source = map.getSettlement(scan.nextLine());
             if (source == null) {
                 System.out.println("ERORR: Settlement not found, try again!");
-            }else {
+            } else {
                 valid = true;
             }
         }
@@ -123,12 +150,13 @@ public class Application {
             }
         }
         // Gets map to find the shortest route and prints it to the user.
-        printRoute(map.findRoute(source,dest), source);
+        printRoute(map.findRoute(source, dest), source);
     }
 
     /**
      * Prints the route in a user friendly manner.
-     * @param route The route which has been pre-calculated.
+     *
+     * @param route  The route which has been pre-calculated.
      * @param source The source destination.
      */
     private void printRoute(ArrayList<Road> route, Settlement source) {
@@ -139,12 +167,12 @@ public class Application {
         for (Road r : route) {
             next = r.getAlternateSettlement(current);
             System.out.println("Take the " + r.getName() + " for " + r.getLength() + " miles until you reach " +
-                                next.getName());
+                    next.getName());
             totalMiles += r.getLength();
             current = next;
         }
         DecimalFormat decimal = new DecimalFormat("##.00");
-        System.out.println("The total mileage of the route is : "  + decimal.format(totalMiles) + " miles.");
+        System.out.println("The total mileage of the route is : " + decimal.format(totalMiles) + " miles.");
     }
 
     /**
@@ -207,7 +235,7 @@ public class Application {
             map.load();
             System.out.println("Load Complete!");
         } catch (IOException IO) {
-            System.out.println("IO Exception, File probably not found.");
+            System.out.println("IO Exception, File not found.");
         }
 
     }
@@ -257,29 +285,9 @@ public class Application {
         pop = scan.nextInt();
 
         // THIS IS NECESSARY, scan.nextInt() DOESNT READ THE \n
-        scan.nextLine(); // DONT TOUCH
-        // DONT TOUCH
+        scan.nextLine();
 
-        boolean valid;
-        do {
-            valid = false;
-            System.out.print("Type: ");
-            String choice = scan.nextLine().toUpperCase();
-            try {
-                type = SettlementType.valueOf(choice);
-                valid = true;
-            } catch (IllegalArgumentException iae) {
-                System.out.print(choice + " is not a valid choice. Try again. (");
-                for (int i = 0; i < SettlementType.values().length; i++) {
-                    System.out.print(SettlementType.values()[i]);
-
-                    if (i < SettlementType.values().length - 1) { // if not the last element in the array.
-                        System.out.print(", "); // add a seperator.
-                    }
-                }
-                System.out.println(")");
-            }
-        } while (!valid);
+        type = askForSettlementType();
         return new Settlement(nm, pop, type);
     }
 

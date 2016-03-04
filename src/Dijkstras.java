@@ -3,7 +3,8 @@ import java.util.*;
 
 
 /**
- * Created by qinusty on 03/03/16.
+ * @author Josh Smith
+ * @version 2.0 (4th March 2016)
  */
 public class Dijkstras {
 
@@ -14,7 +15,8 @@ public class Dijkstras {
 
     /**
      * Constructor for the Dijkstras class. Initialises the edges and vertices with map roads and settlements.
-     * @param m The Map to be operated on.
+     *
+     * @param m      The Map to be operated on.
      * @param source The Source settlement.
      */
     public Dijkstras(Map m, Settlement source) {
@@ -27,11 +29,11 @@ public class Dijkstras {
     /**
      * Calculates the shortest route betweeen the source Settlement and the passed destination
      * Settlement.
+     *
      * @param dest The destination settlement to be routed towards.
      * @return An ArrayList of roads in the order of the route.
      */
     public ArrayList<Road> shortestRoute(Settlement dest) {
-
         // optimal distances from source
         HashMap<Settlement, Double> dist = new HashMap<>();
         // previous nodes in the routes from source.
@@ -41,17 +43,18 @@ public class Dijkstras {
         ArrayList<Settlement> Q = new ArrayList<>(vertices);
 
         for (Settlement v : vertices) {
-            dist.put(v, (double)2000000); // 2000000 is 'infinity'
+            dist.put(v, (double) 2000000); // 2000000 is 'infinity'
             prev.put(v, null); // null is undefined
         }
-        dist.put(source, (double)0);
+        dist.put(source, (double) 0);
         // Start at source
         Settlement u;
-        boolean first = true;
+        // This is the first loop
+        boolean firstLoop = true;
         while (!Q.isEmpty()) {
-            if (first) {
+            if (firstLoop) {
                 u = source;
-                first = false;
+                firstLoop = false;
             } else {
                 u = minDist(Q, dist);
             }
@@ -61,7 +64,7 @@ public class Dijkstras {
                 // get the settlement at the other end of road e
                 // otherSettlement, Also known as v in terms of mathematical representation of the algorithm
                 Settlement otherSettlement = e.getAlternateSettlement(u);
-                Double alt = (double)0;
+                Double alt = (double) 0;
                 if (Q.contains(otherSettlement)) { // if this road leads to a settlement we haven't been to.
                     // Set the possible alt distance to this other settlement to
                     // the distance to u + this current roads length
@@ -82,6 +85,7 @@ public class Dijkstras {
     /**
      * Takes a distance calculated hashMap of previous Settlements and the destination and returns a route in form of
      * an ArrayList of type Road.
+     *
      * @param prev HashMap of previous nodes leading back towards the source settlement.
      * @param dest The destination to start backtracking from.
      * @return Returns an ArrayList of type Road storing the Roads to take for the desired route.
@@ -102,7 +106,8 @@ public class Dijkstras {
     /**
      * Gets a settlement which has the smallest possible distance from source via known settlements,
      * which is also unvisited.
-     * @param Q The list of unvisited settlements.
+     *
+     * @param Q    The list of unvisited settlements.
      * @param dist The HashMap of already calculated distances from the source destination.
      * @return Returns a Settlement which is unvisited and has the minimal distance from source.
      */
@@ -118,7 +123,6 @@ public class Dijkstras {
         }
         return ret;
     }
-
 
 
 }

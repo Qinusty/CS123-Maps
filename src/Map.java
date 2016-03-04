@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Set;
 
 /**
  * @author Chris Loftus, Josh Smith
- * @version 1.3 (1st March 2016)
+ * @version 2.0 (4th March 2016)
  */
 
 public class Map {
@@ -20,7 +19,6 @@ public class Map {
      * Default constructor, initialises lists.
      */
     public Map() {
-        // INSERT CODE
         settlements = new ArrayList<>();
         roads = new ArrayList<>();
     }
@@ -40,7 +38,6 @@ public class Map {
      * @throws IllegalArgumentException
      */
     public void addSettlement(Settlement newSettlement) throws IllegalArgumentException {
-        // STEP 5: INSERT CODE HERE
         if (getSettlement(newSettlement.getName()) != null) {
             System.out.println("ERROR: Settlement already exists on map.");
         } else {
@@ -50,6 +47,7 @@ public class Map {
 
     /**
      * Removes the first settlement with an identical name in the list of settlements.
+     *
      * @param name The name of the settlement to remove.
      */
     public void removeSettlement(String name) {
@@ -68,12 +66,13 @@ public class Map {
     /**
      * Adds a road to the list of roads. Checks to make sure that an identical road does not exist and also
      * that there isn't an identical route on the map.
+     *
      * @param road The road to add.
      */
     public void addRoad(Road road) {
         if (roads.contains(road)) {
             System.out.println("ERROR: Road already exists on map.");
-        }else {
+        } else {
             boolean noOtherConnectingRoads = true;
             for (Road r : road.getSourceSettlement().getAllRoads()) {
                 // IF there's another road with the same source and destination.
@@ -91,15 +90,18 @@ public class Map {
     }
 
     public void removeRoad(Road r) {
-        r.getSourceSettlement().delete(r);
+        // Trigger the removal of the road from connected settlements.
+        r.getSourceSettlement().disconnectRoad(r);
+        // remove it from the map.
         roads.remove(r);
     }
 
     /**
      * Finds a road with details matching those provided and returns it.
-     * @param name The name of the road to be found.
+     *
+     * @param name   The name of the road to be found.
      * @param source The name of the source destination of the road to be found.
-     * @param dest The name of the destination destination of the road to be found.
+     * @param dest   The name of the destination destination of the road to be found.
      * @return Returns a Road with identical values as those passed. or null if one is not found.
      */
     public Road findRoad(String name, String source, String dest) {
@@ -116,6 +118,7 @@ public class Map {
 
     /**
      * Finds the fastest route between two settlements and returns the route as a list of roads in order A -> B.
+     *
      * @param A The starting settlement.
      * @param B The destination settlement.
      * @return Returns a list of roads which make up the route found between A and B. If null, no route found.
@@ -126,15 +129,29 @@ public class Map {
     }
 
     /**
-     *
      * @return Returns all settlements.
      */
     public ArrayList<Settlement> getSettlements() {
         return settlements;
     }
 
+
     /**
+     * Takes a string and finds a matching settlement on the map and returns the object of said map.
      *
+     * @param name The name of the settlement.
+     * @return The object of the found settlement.
+     */
+    public Settlement getSettlement(String name) {
+        for (Settlement s : settlements) {
+            if (s.getName().equals(name)) {
+                return s;
+            }
+        }
+        return null;
+    }
+
+    /**
      * @return Returns all roads.
      */
     public ArrayList<Road> getRoads() {
@@ -147,7 +164,6 @@ public class Map {
      * @throws IOException Throws IO exception if either file is not found.
      */
     public void load() throws IOException {
-        // STEP 6: INSERT CODE HERE
         // reset arraylist
         settlements.clear();
 
@@ -162,7 +178,7 @@ public class Map {
             int pop = infile.nextInt();
             String type = infile.next();
             try {
-                settlements.add(new Settlement(nm, pop, SettlementType.valueOf(type)));
+                addSettlement(new Settlement(nm, pop, SettlementType.valueOf(type)));
             } catch (IllegalArgumentException iae) {
                 System.out.println("Settlement: " + nm + " not added due to invalid type.");
             }
@@ -186,9 +202,10 @@ public class Map {
             // Take settlement strings and convert them into existing objects with the same names
             source = getSettlement(infile.next());
             dest = getSettlement(infile.next());
+            // validate the data read from file.
             try {
                 if (source != null && dest != null) {
-                    roads.add(new Road(nm, Classification.valueOf(type), source, dest, dist));
+                    addRoad(new Road(nm, Classification.valueOf(type), source, dest, dist));
                 } else {
                     System.out.println("Source or Destination not found on map.");
                 }
@@ -199,23 +216,10 @@ public class Map {
         infile.close();
     }
 
-    /**
-     * Takes a string and finds a matching settlement on the map and returns the object of said map.
-     *
-     * @param name The name of the settlement.
-     * @return The object of the found settlement.
-     */
-    public Settlement getSettlement(String name) {
-        for (Settlement s : settlements) {
-            if (s.getName().equals(name)) {
-                return s;
-            }
-        }
-        return null;
-    }
 
     /**
      * Saves the map data to settlements.txt and roads.txt.
+     *
      * @throws IOException Can throw IO exception.
      */
     public void save() throws IOException {
@@ -223,7 +227,6 @@ public class Map {
         // --------------------------*** Settlements *** --------------------------------
 
         // possibly create file if not found
-
         PrintWriter outfile = new PrintWriter(new FileWriter("settlements.txt"));
         // Print amount of settlements in file
         outfile.println(settlements.size());
@@ -263,7 +266,6 @@ public class Map {
         }
         return result;
     }
-
 
 
 }
