@@ -1,6 +1,7 @@
 import sun.rmi.transport.DGCImpl_Skel;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -56,8 +57,6 @@ public class Application {
                     break;
                 case '6':
                     // shortest route query
-                    // The best test for this is currently Aberystwyth to Borth due to
-                    // the
                     queryForRoute();
                     break;
                 case '7': // Save Map to file
@@ -106,7 +105,7 @@ public class Application {
         while (!valid) {
             System.out.print("Source: ");
             source = map.getSettlement(scan.nextLine());
-            if (source.equals(null)) {
+            if (source == null) {
                 System.out.println("ERORR: Settlement not found, try again!");
             }else {
                 valid = true;
@@ -117,7 +116,7 @@ public class Application {
         while (!valid) {
             System.out.print("Destination: ");
             dest = map.getSettlement(scan.nextLine());
-            if (dest.equals(null)) {
+            if (dest == null) {
                 System.out.println("ERORR: Settlement not found, try again!");
             } else {
                 valid = true;
@@ -135,14 +134,17 @@ public class Application {
     private void printRoute(ArrayList<Road> route, Settlement source) {
         Settlement next;
         Settlement current = source;
+        double totalMiles = 0;
         System.out.println("Starting at " + source.getName());
         for (Road r : route) {
             next = r.getAlternateSettlement(current);
             System.out.println("Take the " + r.getName() + " for " + r.getLength() + " miles until you reach " +
                                 next.getName());
+            totalMiles += r.getLength();
             current = next;
-
         }
+        DecimalFormat decimal = new DecimalFormat("##.00");
+        System.out.println("The total mileage of the route is : "  + decimal.format(totalMiles) + " miles.");
     }
 
     /**
