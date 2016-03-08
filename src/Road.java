@@ -108,7 +108,9 @@ public class Road {
             return destinationSettlement;
         } else if (dest) {
             return sourceSettlement;
-        } else return null;
+        } else {
+            return null;
+        }
     }
 
     @Override

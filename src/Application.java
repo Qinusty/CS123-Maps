@@ -39,7 +39,7 @@ public class Application {
                     map.removeSettlement(scan.nextLine());
                     break;
                 case '3': // Add Road
-                    map.addRoad(askForRoad());
+                    askForRoad();
                     break;
                 case '4': // Remove Road
                     Road removalRoad = askForRoadToRemove();
@@ -83,7 +83,7 @@ public class Application {
             for (Classification cls : Classification.values()) {
                 System.out.print(cls + " ");
             }
-            String choice = scan.nextLine().toUpperCase();
+            String choice = scan.next().toUpperCase();
             try {
                 result = Classification.valueOf(choice);
                 valid = true;
@@ -91,6 +91,7 @@ public class Application {
                 System.out.println(choice + " is not one of the options. Try again.");
             }
         } while (!valid);
+        scan.nextLine();
         return result;
     }
 
@@ -124,6 +125,10 @@ public class Application {
         return type;
     }
 
+    /**
+     * Queries the user for data required to find the shortest route between two settlements
+     * and then prints the route to the screen using printRoute();
+     */
     private void queryForRoute() {
         System.out.println("Please enter the information required to find your route.");
         Settlement source = null;
@@ -133,7 +138,7 @@ public class Application {
             System.out.print("Source: ");
             source = map.getSettlement(scan.nextLine());
             if (source == null) {
-                System.out.println("ERORR: Settlement not found, try again!");
+                System.out.println("ERROR: Settlement not found, try again!");
             } else {
                 valid = true;
             }
@@ -144,7 +149,7 @@ public class Application {
             System.out.print("Destination: ");
             dest = map.getSettlement(scan.nextLine());
             if (dest == null) {
-                System.out.println("ERORR: Settlement not found, try again!");
+                System.out.println("ERROR: Settlement not found, try again!");
             } else {
                 valid = true;
             }
@@ -180,26 +185,36 @@ public class Application {
      *
      * @return A Road object instantiated with the variables received when querying the user.
      */
-    private Road askForRoad() {
+    private void askForRoad() {
         String name;
         Classification classification;
         double dist;
-        String source, dest;
+        Settlement source = null, dest = null;
         System.out.print("Enter road name: ");
         name = scan.nextLine();
         classification = askForRoadClassifier();
 
         // VALIDATE map.getSettlement()
-        System.out.print("Enter source settlement: ");
-        source = scan.nextLine();
-        System.out.print("Enter destination settlement: ");
-        dest = scan.nextLine();
+        while(source == null) {
+            System.out.print("Enter source settlement: ");
+            source = map.getSettlement(scan.nextLine());
+            if (source == null) {
+                System.out.println("Invalid name of settlement.");
+            }
+        }
+        while (dest == null) {
+            System.out.print("Enter destination settlement: ");
+            dest = map.getSettlement(scan.nextLine());
+            if (dest == null) {
+                System.out.println("Invalid name of settlement.");
+            }
+        }
 
         System.out.print("Distance (Miles) : ");
         dist = scan.nextDouble();
-        scan.nextLine();
+        scan.nextLine(); // keep
 
-        return new Road(name, classification, map.getSettlement(source), map.getSettlement(dest), dist);
+        map.addRoad(name, classification, source, dest, dist);
     }
 
     private Road askForRoadToRemove() {

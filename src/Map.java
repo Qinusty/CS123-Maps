@@ -64,31 +64,33 @@ public class Map {
     }
 
     /**
-     * Adds a road to the list of roads. Checks to make sure that an identical road does not exist and also
-     * that there isn't an identical route on the map.
+     * Adds a road to the map after performing various checks on the road e.g. Checks if there is an identical
+     * road in the system and also checks if there is already a road between the two settlements this new road connects.
      *
-     * @param road The road to add.
+     * @param nm The name of the road.
+     * @param classifier The classification of the road.
+     * @param source The source settlement of the road.
+     * @param dest The destination settlement of the road.
+     * @param dist The distance that the road spans in miles.
      */
-    public void addRoad(Road road) {
-        if (roads.contains(road)) {
-            System.out.println("ERROR: Road already exists on map.");
-        } else {
-            boolean noOtherConnectingRoads = true;
-            for (Road r : road.getSourceSettlement().getAllRoads()) {
-                // IF there's another road with the same source and destination.
-                if (r.getAlternateSettlement(road.getSourceSettlement()).equals(road.getDestinationSettlement())) {
-                    noOtherConnectingRoads = false;
-                    System.out.println("ERROR: Another road exists with the same source and destination settlements.");
-                    break;
-
-                }
+    public void addRoad(String nm, Classification classifier, Settlement source, Settlement dest, double dist) {
+        // Checks that there isn't already a connecting road between these settlements.
+        if (!connectingRoadExists(source, dest)) {
+            // check if we already have a road with these deails.
+            if (findRoad(nm, source.getName(), dest.getName()) == null) {
+                roads.add(new Road(nm, classifier, source, dest, dist));
+            } else {
+                System.out.println("ERROR: Road already exists on map.");
             }
-            if (noOtherConnectingRoads) {
-                roads.add(road);
-            }
+        }else {
+            System.out.println("ERROR: Connecting road already exists.");
         }
     }
 
+    /**
+     * Totally removes a road from the map.
+     * @param r  The road to remove.
+     */
     public void removeRoad(Road r) {
         // Trigger the removal of the road from connected settlements.
         r.getSourceSettlement().disconnectRoad(r);
@@ -189,7 +191,7 @@ public class Map {
         int roadTotal = 0;
         infile.useDelimiter("\r?\n|\r|:");
         roadTotal = infile.nextInt();
-
+        infile.nextLine(); // Keep this here
         for (int i = 0; i < roadTotal; i++) {
             String nm;
             String type;
@@ -204,8 +206,9 @@ public class Map {
             dest = getSettlement(infile.next());
             // validate the data read from file.
             try {
+                // Ensure that the source and destinations exist.
                 if (source != null && dest != null) {
-                    addRoad(new Road(nm, Classification.valueOf(type), source, dest, dist));
+                    addRoad(nm, Classification.valueOf(type), source, dest, dist);
                 } else {
                     System.out.println("Source or Destination not found on map.");
                 }
@@ -265,6 +268,22 @@ public class Map {
                     ", Destination Settlement=" + r.getDestinationSettlement().getName() + "\n";
         }
         return result;
+    }
+
+    /**
+     * Checks whether a road already exists within the system
+     * @param s
+     * @param d
+     * @return
+     */
+    private boolean connectingRoadExists(Settlement s, Settlement d) {
+        for (Road r : s.getAllRoads()) {
+            // checks whether or not Road r has an alternate settlement equal to d
+            if (r.getAlternateSettlement(s).equals(d)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
