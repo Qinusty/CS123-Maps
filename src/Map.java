@@ -74,16 +74,20 @@ public class Map {
      * @param dist The distance that the road spans in miles.
      */
     public void addRoad(String nm, Classification classifier, Settlement source, Settlement dest, double dist) {
-        // Checks that there isn't already a connecting road between these settlements.
-        if (!connectingRoadExists(source, dest)) {
-            // check if we already have a road with these deails.
-            if (findRoad(nm, source.getName(), dest.getName()) == null) {
-                roads.add(new Road(nm, classifier, source, dest, dist));
+        if (source != null && dest != null) {
+            // Checks that there isn't already a connecting road between these settlements.
+            if (!connectingRoadExists(source, dest)) {
+                // check if we already have a road with these deails.
+                if (findRoad(nm, source.getName(), dest.getName()) == null) {
+                    roads.add(new Road(nm, classifier, source, dest, dist));
+                } else {
+                    System.out.println("ERROR: Road already exists on map.");
+                }
             } else {
-                System.out.println("ERROR: Road already exists on map.");
+                System.out.println("ERROR: Connecting road already exists.");
             }
-        }else {
-            System.out.println("ERROR: Connecting road already exists.");
+        } else {
+            System.out.println("ERROR: Source or Destination settlement not found!");
         }
     }
 
@@ -207,11 +211,7 @@ public class Map {
             // validate the data read from file.
             try {
                 // Ensure that the source and destinations exist.
-                if (source != null && dest != null) {
-                    addRoad(nm, Classification.valueOf(type), source, dest, dist);
-                } else {
-                    System.out.println("Source or Destination not found on map.");
-                }
+                addRoad(nm, Classification.valueOf(type), source, dest, dist);
             } catch (IllegalArgumentException iae) {
                 System.out.println("Road not added, IAE exception was thrown.");
             }

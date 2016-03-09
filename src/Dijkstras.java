@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.*;
 
 
@@ -64,7 +63,7 @@ public class Dijkstras {
                 // get the settlement at the other end of road e
                 // otherSettlement, Also known as v in terms of mathematical representation of the algorithm
                 Settlement otherSettlement = e.getAlternateSettlement(u);
-                Double alt = (double) 0;
+                Double alt;
                 if (Q.contains(otherSettlement)) { // if this road leads to a settlement we haven't been to.
                     // Set the possible alt distance to this other settlement to
                     // the distance to u + this current roads length
