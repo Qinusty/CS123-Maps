@@ -211,12 +211,17 @@ public class Settlement {
         String result = "";
         result += "Settlement Name = " + this.getName() + "\n" +
                 "Population = " + this.getPopulation() + "\n" +
-                "Kind = " + this.getKind().toString() + "\n" +
-                "Roads = \n";
-        for (Road r : this.getAllRoads()) {
-            result += indent(1) + r.getName() + " connected to " + r.getAlternateSettlement(this).getName() + "\n";
+                "Kind = " + this.getKind().toString() + "\n";
+
+        if (roads.size() > 0) {
+            result += "Roads = \n";
+            for (Road r : this.getAllRoads()) {
+                result += indent(1) + r.getName() + " connected to " + r.getAlternateSettlement(this).getName() + "\n";
+            }
+        } else {
+            result += "There are no roads connected to this settlement.";
         }
-        return result;
+        return result + "\n";
     }
 
     private String indent(int level) {

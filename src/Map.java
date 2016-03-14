@@ -57,7 +57,7 @@ public class Map {
                 s.deleteRoads();
                 settlements.remove(s);
                 // Stop looping
-                break;
+                return;
             }
         }
         System.out.println("Settlement not found!");
@@ -259,13 +259,18 @@ public class Map {
         for (Settlement s : settlements) {
             result += s.toString();
         }
-        result += "\nMap Roads: \n";
-        for (Road r : roads) {
-            result += "Road Name=" + r.getName() +
-                    ", Classification=" + r.getClassification().toString() +
-                    ", length=" + r.getLength() +
-                    ", Source Settlement=" + r.getSourceSettlement().getName() +
-                    ", Destination Settlement=" + r.getDestinationSettlement().getName() + "\n";
+        if (roads.size() > 0) {
+            result += "\nMap Roads: \n";
+            for (Road r : roads) {
+                result += "Road Name=" + r.getName() +
+                        ", Classification=" + r.getClassification().toString() +
+                        ", length=" + r.getLength() +
+                        ", Source Settlement=" + r.getSourceSettlement().getName() +
+                        ", Destination Settlement=" + r.getDestinationSettlement().getName() + "\n";
+            }
+        }
+        else {
+            result += "There are no roads.";
         }
         return result;
     }
