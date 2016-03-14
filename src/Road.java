@@ -6,7 +6,7 @@ import java.util.Scanner;
  * with connected roads.
  *
  * @author Chris Loftus
- * @version 2.0 (4th March 2015)
+ * @version 3.0 (14th March 2015)
  */
 public class Road {
     private String name;

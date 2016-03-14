@@ -3,7 +3,7 @@ import java.util.*;
 
 /**
  * @author Josh Smith
- * @version 2.0 (4th March 2016)
+ * @version 3.0 (14th March 2016)
  */
 public class Dijkstras {
 

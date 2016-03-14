@@ -7,7 +7,7 @@ import java.util.Scanner;
  * Main class to test the Road and Settlement classes
  *
  * @author Chris Loftus, Josh Smith
- * @version 2.0 (4th March 2016)
+ * @version 3.0 (14th March 2016)
  */
 public class Application {
 
@@ -59,9 +59,11 @@ public class Application {
                 case '7': // Save Map to file
                     save();
                     break;
+/* Debug case, helps with testing
                 case '8': // Load Map from file
                     load();
                     break;
+*/
             }
         } while (input != 'q' && input != 'Q');
 
@@ -268,7 +270,9 @@ public class Application {
                 " 5) Display Map\n" +
                 " 6) Get shortest route\n" +
                 " 7) Save Map\n" +
+                /*
                 " 8) Load Map\n" +
+                */
                 " Q) Quit"
         );
     }

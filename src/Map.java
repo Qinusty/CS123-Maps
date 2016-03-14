@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 /**
  * @author Chris Loftus, Josh Smith
- * @version 2.0 (4th March 2016)
+ * @version 3.0 (14th March 2016)
  */
 
 public class Map {
@@ -23,7 +23,7 @@ public class Map {
         roads = new ArrayList<>();
     }
 
-    /**
+    /**l
      * In this version we display the result of calling toString on the command
      * line. Future versions may display graphically
      */
@@ -42,6 +42,7 @@ public class Map {
             System.out.println("ERROR: Settlement already exists on map.");
         } else {
             settlements.add(newSettlement);
+            System.out.println("Road successfully added.");
         }
     }
 
@@ -56,6 +57,7 @@ public class Map {
                 roads.removeAll(s.getAllRoads());
                 s.deleteRoads();
                 settlements.remove(s);
+                System.out.println("Road successfully removed");
                 // Stop looping
                 return;
             }
@@ -77,9 +79,10 @@ public class Map {
         if (source != null && dest != null) {
             // Checks that there isn't already a connecting road between these settlements.
             if (!connectingRoadExists(source, dest)) {
-                // check if we already have a road with these deails.
+                // check if we already have a road with these details.
                 if (findRoad(nm, source.getName(), dest.getName()) == null) {
                     roads.add(new Road(nm, classifier, source, dest, dist));
+                    System.out.println("Road successfully added.");
                 } else {
                     System.out.println("ERROR: Road already exists on map.");
                 }
@@ -100,6 +103,7 @@ public class Map {
         r.getSourceSettlement().disconnectRoad(r);
         // remove it from the map.
         roads.remove(r);
+        System.out.println("Road successfully removed");
     }
 
     /**
@@ -253,12 +257,21 @@ public class Map {
         outfile.close();
     }
 
+    /**
+     * Gets the multiline string to represent the Map.
+     * @return Returns a multiline string which contains the important information about the Map.
+     */
     public String toString() {
         String result = "";
-        result += "Map Settlements: \n";
-        for (Settlement s : settlements) {
-            result += s.toString();
+        if (settlements.size() > 0) {
+            result += "Map Settlements: \n";
+            for (Settlement s : settlements) {
+                result += s.toString();
+            }
+        } else {
+            result += "There are no settlements.";
         }
+        
         if (roads.size() > 0) {
             result += "\nMap Roads: \n";
             for (Road r : roads) {
@@ -277,9 +290,9 @@ public class Map {
 
     /**
      * Checks whether a road already exists within the system
-     * @param s
-     * @param d
-     * @return
+     * @param s First settlement
+     * @param d Second settlement
+     * @return Returns true if there is already a road between s and d.
      */
     private boolean connectingRoadExists(Settlement s, Settlement d) {
         for (Road r : s.getAllRoads()) {

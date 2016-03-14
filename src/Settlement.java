@@ -4,7 +4,7 @@ import java.util.ArrayList;
  * Represents a road that is linked to two settlements: source and destination.
  *
  * @author Chris Loftus, Josh Smith
- * @version 2.0 (4th March 2016)
+ * @version 3.0 (14th March 2016)
  */
 public class Settlement {
     private String name;
@@ -23,6 +23,12 @@ public class Settlement {
         kind = k;
     }
 
+    /**
+     * Constructor for a settlement with name, population and settlement type.
+     * @param nm Name of the settlement
+     * @param pop Population of the Settlement
+     * @param k Type of the Settlement
+     */
     public Settlement(String nm, int pop, SettlementType k) {
         this();
         name = nm;
@@ -30,6 +36,9 @@ public class Settlement {
         population = pop;
     }
 
+    /**
+     * Default constructor which instantiates the ArrayList roads.
+     */
     public Settlement() {
         // INSERT CODE HERE
         roads = new ArrayList<>();
