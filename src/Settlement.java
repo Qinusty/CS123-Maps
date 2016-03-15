@@ -52,7 +52,7 @@ public class Settlement {
      * @return The name of the settlement.
      */
     public String getName() {
-        return name;
+            return name;
     }
 
     /**
@@ -144,11 +144,10 @@ public class Settlement {
      * of each road
      */
     public void deleteRoads() {
-        for (int i = roads.size() - 1; i > 0; i--) {
-            this.disconnectRoad(roads.get(i));
+        for (Road r : roads) {
+            this.disconnectRoad(r);
         }
 
-        // I'll give you this line!
         roads.clear();
     }
 
@@ -162,15 +161,21 @@ public class Settlement {
     public void disconnectRoad(Road road) {
         for (Road r : roads) {
             if (r.equals(road)) {
-                // remove first to prevent infinite recursive loops.
-                roads.remove(r);
                 // Delete the road from the other settlement.
-                r.getAlternateSettlement(this).disconnectRoad(r);
+                r.getAlternateSettlement(this).removeRoad(road);
 
                 // Stop looping through
                 break;
             }
         }
+    }
+
+    /**
+     * Removes a given road from the list of roads connected to the settlement.
+     * @param road A road to be removed.
+     */
+    public void removeRoad(Road road) {
+        roads.remove(road);
     }
 
     /**

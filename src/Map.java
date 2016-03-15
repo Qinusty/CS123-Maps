@@ -1,7 +1,5 @@
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -36,13 +34,15 @@ public class Map {
      *
      * @param newSettlement The settlement to add.
      * @throws IllegalArgumentException
+     * @return Returns true if the settlement is successfully added!
      */
-    public void addSettlement(Settlement newSettlement) throws IllegalArgumentException {
+    public boolean addSettlement(Settlement newSettlement) throws IllegalArgumentException {
         if (getSettlement(newSettlement.getName()) != null) {
-            System.out.println("ERROR: Settlement already exists on map.");
+            System.err.println("ERROR: Settlement already exists on map.");
+            return false;
         } else {
             settlements.add(newSettlement);
-            System.out.println("Road successfully added.");
+            return true;
         }
     }
 
@@ -57,7 +57,7 @@ public class Map {
                 roads.removeAll(s.getAllRoads());
                 s.deleteRoads();
                 settlements.remove(s);
-                System.out.println("Road successfully removed");
+                System.out.println("Settlement successfully removed");
                 // Stop looping
                 return;
             }
@@ -74,24 +74,26 @@ public class Map {
      * @param source The source settlement of the road.
      * @param dest The destination settlement of the road.
      * @param dist The distance that the road spans in miles.
+     * @return Returns true if the road was successfully added!
      */
-    public void addRoad(String nm, Classification classifier, Settlement source, Settlement dest, double dist) {
+    public boolean addRoad(String nm, Classification classifier, Settlement source, Settlement dest, double dist) {
         if (source != null && dest != null) {
             // Checks that there isn't already a connecting road between these settlements.
             if (!connectingRoadExists(source, dest)) {
                 // check if we already have a road with these details.
                 if (findRoad(nm, source.getName(), dest.getName()) == null) {
                     roads.add(new Road(nm, classifier, source, dest, dist));
-                    System.out.println("Road successfully added.");
+                    return true;
                 } else {
-                    System.out.println("ERROR: Road already exists on map.");
+                    System.err.println("ERROR: Road already exists on map.");
                 }
             } else {
-                System.out.println("ERROR: Connecting road already exists.");
+                System.err.println("ERROR: Connecting road already exists.");
             }
         } else {
-            System.out.println("ERROR: Source or Destination settlement not found!");
+            System.err.println("ERROR: Source or Destination settlement not found!");
         }
+        return false;
     }
 
     /**
@@ -137,6 +139,40 @@ public class Map {
         Dijkstras d = new Dijkstras(this, A);
         return d.shortestRoute(B);
     }
+    /**
+     * Queries the user for data required to find the shortest route between two settlements
+     * and then prints the route to the screen using printRoute();
+     */
+    public void queryForRoute(Scanner scan) {
+        System.out.println("Please enter the information required to find your route.");
+        Settlement source = null;
+        Settlement dest = null;
+        boolean valid = false;
+        while (!valid) {
+            System.out.print("Source: ");
+            source = this.getSettlement(scan.nextLine());
+            if (source == null) {
+                System.err.println("ERROR: Settlement not found, try again!");
+            } else {
+                valid = true;
+            }
+        }
+        // Reset validity.
+        valid = false;
+        while (!valid) {
+            System.out.print("Destination: ");
+            dest = this.getSettlement(scan.nextLine());
+            if (dest == null) {
+                System.err.println("ERROR: Settlement not found, try again!");
+            } else {
+                valid = true;
+            }
+        }
+        // Gets map to find the shortest route and prints it to the user.
+        printRoute(this.findRoute(source, dest), source);
+    }
+
+
 
     /**
      * @return Returns all settlements.
@@ -178,49 +214,55 @@ public class Map {
         settlements.clear();
 
         // ---------------------*** Settlements ***---------------------------
-        Scanner infile = new Scanner(new FileReader("settlements.txt"));
-        int settlementTotal = 0;
-        infile.useDelimiter("\r?\n|\r|:"); // newlines or colons
-        settlementTotal = infile.nextInt();
+        try(Scanner infile = new Scanner(new FileReader("settlements.txt"))) {
+            int settlementTotal = 0;
+            infile.useDelimiter("\r?\n|\r|:"); // newlines or colons
+            settlementTotal = infile.nextInt();
 
-        for (int i = 0; i < settlementTotal; i++) {
-            String nm = infile.next();
-            int pop = infile.nextInt();
-            String type = infile.next();
-            try {
-                addSettlement(new Settlement(nm, pop, SettlementType.valueOf(type)));
-            } catch (IllegalArgumentException iae) {
-                System.out.println("Settlement: " + nm + " not added due to invalid type.");
+            for (int i = 0; i < settlementTotal; i++) {
+                String nm = infile.next();
+                int pop = infile.nextInt();
+                String type = infile.next();
+                try {
+                    addSettlement(new Settlement(nm, pop, SettlementType.valueOf(type)));
+                } catch (IllegalArgumentException iae) {
+                    System.out.println("Settlement: " + nm + " not added due to invalid type.");
+                }
             }
+            System.out.println("Settlements loaded successfully.");
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
-        infile.close();
         // ------------------------*** Roads ***-----------------------------
-        infile = new Scanner(new FileReader("roads.txt"));
-        int roadTotal = 0;
-        infile.useDelimiter("\r?\n|\r|:");
-        roadTotal = infile.nextInt();
-        infile.nextLine(); // Keep this here
-        for (int i = 0; i < roadTotal; i++) {
-            String nm;
-            String type;
-            double dist;
-            Settlement source;
-            Settlement dest;
-            nm = infile.next();
-            type = infile.next();
-            dist = infile.nextDouble();
-            // Take settlement strings and convert them into existing objects with the same names
-            source = getSettlement(infile.next());
-            dest = getSettlement(infile.next());
-            // validate the data read from file.
-            try {
-                // Ensure that the source and destinations exist.
-                addRoad(nm, Classification.valueOf(type), source, dest, dist);
-            } catch (IllegalArgumentException iae) {
-                System.out.println("Road not added, IAE exception was thrown.");
+        try(Scanner infile = new Scanner(new FileReader("roads.txt"))) {
+            int roadTotal = 0;
+            infile.useDelimiter("\r?\n|\r|:");
+            roadTotal = infile.nextInt();
+            infile.nextLine(); // Keep this here
+            for (int i = 0; i < roadTotal; i++) {
+                String nm;
+                String type;
+                double dist;
+                Settlement source;
+                Settlement dest;
+                nm = infile.next();
+                type = infile.next();
+                dist = infile.nextDouble();
+                // Take settlement strings and convert them into existing objects with the same names
+                source = getSettlement(infile.next());
+                dest = getSettlement(infile.next());
+                // validate the data read from file.
+                try {
+                    // Ensure that the source and destinations exist.
+                    addRoad(nm, Classification.valueOf(type), source, dest, dist);
+                } catch (IllegalArgumentException iae) {
+                    System.out.println("Road not added, IAE exception was thrown.");
+                }
             }
+            System.out.println("Road loaded successfully.");
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
-        infile.close();
     }
 
 
@@ -234,27 +276,35 @@ public class Map {
         // --------------------------*** Settlements *** --------------------------------
 
         // possibly create file if not found
-        PrintWriter outfile = new PrintWriter(new FileWriter("settlements.txt"));
-        // Print amount of settlements in file
-        outfile.println(settlements.size());
-        for (Settlement s : settlements) {
-            outfile.println(s.getName() + ":" +
-                    s.getPopulation() + ":" +
-                    s.getKind().toString());
+        try(PrintWriter outfile = new PrintWriter(new FileWriter("settlements.txt"))) {
+            // Print amount of settlements in file
+            outfile.println(settlements.size());
+            for (Settlement s : settlements) {
+                outfile.println(s.getName() + ":" +
+                        s.getPopulation() + ":" +
+                        s.getKind().toString());
+            }
+            System.out.println("Settlements saved successfully.");
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
-        outfile.close();
+
         // --------------------------*** Roads *** --------------------------------
-        outfile = new PrintWriter(new FileWriter("roads.txt"));
-        // Print amount of roads in file
-        outfile.println(roads.size());
-        for (Road r : roads) {
-            outfile.println(r.getName() + ":" +
-                    r.getClassification().toString() + ":" +
-                    r.getLength() + ":" +
-                    r.getSourceSettlement().getName() + ":" +
-                    r.getDestinationSettlement().getName());
+        try(PrintWriter outfile = new PrintWriter(new FileWriter("roads.txt"))) {
+            // Print amount of roads in file
+            outfile.println(roads.size());
+            for (Road r : roads) {
+                outfile.println(r.getName() + ":" +
+                        r.getClassification().toString() + ":" +
+                        r.getLength() + ":" +
+                        r.getSourceSettlement().getName() + ":" +
+                        r.getDestinationSettlement().getName());
+            }
+            System.out.println("Roads saved successfully.");
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
         }
-        outfile.close();
+
     }
 
     /**
@@ -271,7 +321,7 @@ public class Map {
         } else {
             result += "There are no settlements.";
         }
-        
+
         if (roads.size() > 0) {
             result += "\nMap Roads: \n";
             for (Road r : roads) {
@@ -302,6 +352,28 @@ public class Map {
             }
         }
         return false;
+    }
+
+    /**
+     * Prints the route in a user friendly manner.
+     *
+     * @param route  The route which has been pre-calculated.
+     * @param source The source destination.
+     */
+    private void printRoute(ArrayList<Road> route, Settlement source) {
+        Settlement next;
+        Settlement current = source;
+        double totalMiles = 0;
+        System.out.println("Starting at " + source.getName());
+        for (Road r : route) {
+            next = r.getAlternateSettlement(current);
+            System.out.println("Take the " + r.getName() + " for " + r.getLength() + " miles until you reach " +
+                    next.getName());
+            totalMiles += r.getLength();
+            current = next;
+        }
+        DecimalFormat decimal = new DecimalFormat("##.00");
+        System.out.println("The total mileage of the route is : " + decimal.format(totalMiles) + " miles.");
     }
 
 

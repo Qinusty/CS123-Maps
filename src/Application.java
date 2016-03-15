@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 /**
@@ -32,7 +33,9 @@ public class Application {
             input = askChar("Enter Choice");
             switch (input) {
                 case '1': // Add Settlement
-                    map.addSettlement(askForSettlement());
+                    if (map.addSettlement(askForSettlement())) {
+                        System.out.println("Settlement successfully added!");
+                    }
                     break;
                 case '2': // Remove Settlement
                     System.out.print("Settlement to remove: ");
@@ -44,7 +47,7 @@ public class Application {
                 case '4': // Remove Road
                     Road removalRoad = askForRoadToRemove();
                     if (removalRoad == null) {
-                        System.out.println("ERROR: Road not found.");
+                        System.err.println("2: Road not found.");
                     } else {
                         map.removeRoad(removalRoad);
                     }
@@ -54,7 +57,7 @@ public class Application {
                     break;
                 case '6':
                     // shortest route query
-                    queryForRoute();
+                    map.queryForRoute(scan);
                     break;
                 case '7': // Save Map to file
                     save();
@@ -128,61 +131,6 @@ public class Application {
     }
 
     /**
-     * Queries the user for data required to find the shortest route between two settlements
-     * and then prints the route to the screen using printRoute();
-     */
-    private void queryForRoute() {
-        System.out.println("Please enter the information required to find your route.");
-        Settlement source = null;
-        Settlement dest = null;
-        boolean valid = false;
-        while (!valid) {
-            System.out.print("Source: ");
-            source = map.getSettlement(scan.nextLine());
-            if (source == null) {
-                System.out.println("ERROR: Settlement not found, try again!");
-            } else {
-                valid = true;
-            }
-        }
-        // Reset validity.
-        valid = false;
-        while (!valid) {
-            System.out.print("Destination: ");
-            dest = map.getSettlement(scan.nextLine());
-            if (dest == null) {
-                System.out.println("ERROR: Settlement not found, try again!");
-            } else {
-                valid = true;
-            }
-        }
-        // Gets map to find the shortest route and prints it to the user.
-        printRoute(map.findRoute(source, dest), source);
-    }
-
-    /**
-     * Prints the route in a user friendly manner.
-     *
-     * @param route  The route which has been pre-calculated.
-     * @param source The source destination.
-     */
-    private void printRoute(ArrayList<Road> route, Settlement source) {
-        Settlement next;
-        Settlement current = source;
-        double totalMiles = 0;
-        System.out.println("Starting at " + source.getName());
-        for (Road r : route) {
-            next = r.getAlternateSettlement(current);
-            System.out.println("Take the " + r.getName() + " for " + r.getLength() + " miles until you reach " +
-                    next.getName());
-            totalMiles += r.getLength();
-            current = next;
-        }
-        DecimalFormat decimal = new DecimalFormat("##.00");
-        System.out.println("The total mileage of the route is : " + decimal.format(totalMiles) + " miles.");
-    }
-
-    /**
      * Queries the user for details to create a road.
      *
      * @return A Road object instantiated with the variables received when querying the user.
@@ -190,7 +138,7 @@ public class Application {
     private void askForRoad() {
         String name;
         Classification classification;
-        double dist;
+        double dist = 0.0d;
         Settlement source = null, dest = null;
         System.out.print("Enter road name: ");
         name = scan.nextLine();
@@ -211,12 +159,21 @@ public class Application {
                 System.out.println("Invalid name of settlement.");
             }
         }
-
-        System.out.print("Distance (Miles) : ");
-        dist = scan.nextDouble();
+        boolean valid = false;
+        do {
+            try {
+                System.out.print("Distance (Miles) : ");
+                dist = scan.nextDouble();
+                valid = true;
+            } catch (InputMismatchException e ) {
+                System.out.println("Invalid input type, Try again!");
+            }
+        } while (!valid);
         scan.nextLine(); // keep
 
-        map.addRoad(name, classification, source, dest, dist);
+        if (map.addRoad(name, classification, source, dest, dist)) {
+            System.out.println("Road successfully added!");
+        }
     }
 
     private Road askForRoadToRemove() {
@@ -250,7 +207,6 @@ public class Application {
     private void load() {
         try {
             map.load();
-            System.out.println("Load Complete!");
         } catch (IOException IO) {
             System.out.println("IO Exception, File not found.");
         }
@@ -300,9 +256,16 @@ public class Application {
         System.out.println("New Settlement");
         System.out.print("Name: ");
         nm = scan.nextLine();
-        System.out.print("Population: ");
-        pop = scan.nextInt();
-
+        boolean valid = false;
+        do {
+            try {
+                System.out.print("Population: ");
+                pop = scan.nextInt();
+                valid = true;
+            } catch (InputMismatchException e) {
+                System.out.println("Invalid input type! Try again");
+            }
+        }while (!valid);
         // THIS IS NECESSARY, scan.nextInt() DOESNT READ THE \n
         scan.nextLine();
 
